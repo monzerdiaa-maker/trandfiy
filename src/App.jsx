@@ -4,14 +4,24 @@ import { ClipLoader } from "react-spinners";
 
 import './App.css';
 
+
+
 function App() {
+
 
     const [products, setproducts] = useState([]);
     const [isloading, setisloading] = useState(true);
     const [error, seterror] = useState(null);
+    const [search, setsearch] = useState("")
+    const [submit, setsubmit] = useState("")
+
+    function handleSearch(e) {
+        e.preventDefault();
+        setsubmit(search);
+    }
 
     useEffect(() => {
-        fetch("https://dummyjson.com/products").then((response) => {
+        fetch(`https://dummyjson.com/products/search?q=${submit}`).then((response) => {
             if (!response.ok) throw new Error('server error!')
             return response.json();
         }).then((data) => {
@@ -21,17 +31,31 @@ function App() {
             seterror(error.message)
             setisloading(false)
         })
-    }, [])
+    }, [submit])
+
+    function back() {
+        setsearch("")
+        setsubmit("")
+    }
 
     return (
         <>
             <nav>
+                <button className="back" onClick={back}>
+                    back
+                </button>
                 <div className="container">
                     <div className="logo">
                         <h3>Trendify</h3>
                     </div>
-                    <button className="sign-in">sing-in</button>
+                    <form onSubmit={handleSearch}>
+                        <input type="text" className="input-search" placeholder="search" name="search" value={search} onChange={(e) => setsearch(e.target.value)}/>
+
+                        <button type="submit" className="input-button" name="search" >search</button>
+
+                    </form>
                 </div>
+
             </nav>
             <main>
                 {isloading ? (
